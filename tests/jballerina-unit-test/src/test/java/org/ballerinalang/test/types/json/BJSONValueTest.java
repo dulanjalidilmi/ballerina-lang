@@ -184,8 +184,7 @@ public class BJSONValueTest {
     @Test
     public void testGetNonExistingElement() {
         BValue[] returns = BRunUtil.invoke(compileResult, "testGetNonExistingElement");
-        String errorMsg = ((BMap<String, BString>) ((BError) returns[0]).getDetails()).get("message").stringValue();
-        Assert.assertEquals(errorMsg, "Key 'name' not found in JSON mapping");
+        Assert.assertNull(returns[0]);
     }
 
     @Test
@@ -326,6 +325,22 @@ public class BJSONValueTest {
         BValue[] returns = BRunUtil.invoke(compileResult, "testGetNestedJsonElement");
         Assert.assertTrue(returns[0] instanceof BString);
         Assert.assertEquals(returns[0].stringValue(), "Colombo");
+
+        Assert.assertTrue(returns[1] instanceof BString);
+        Assert.assertEquals(returns[1].stringValue(), "Colombo");
+
+        Assert.assertTrue(returns[2] instanceof BString);
+        Assert.assertEquals(returns[2].stringValue(), "Colombo");
+
+        Assert.assertTrue(returns[3] instanceof BString);
+        Assert.assertEquals(returns[3].stringValue(), "Colombo");
+    }
+
+    @Test
+    public void testJsonExprAsIndex() {
+        BValue[] returns = BRunUtil.invoke(compileResult, "testJsonExprAsIndex");
+        Assert.assertTrue(returns[0] instanceof BString);
+        Assert.assertEquals(returns[0].stringValue(), "Colombo");
     }
 
     @Test()
@@ -336,6 +351,43 @@ public class BJSONValueTest {
     }
 
     @Test
+    public void testSetToNonArrayWithIndex() {
+        BValue[] returns = BRunUtil.invoke(compileResult, "testSetToNonArrayWithIndex");
+        Assert.assertTrue(returns[0] instanceof BMap);
+        Assert.assertTrue(returns[1] instanceof BString);
+        Assert.assertTrue(returns[2] instanceof BBoolean);
+        Assert.assertEquals(returns[0].stringValue(), "{\"name\":\"supun\"}");
+        Assert.assertEquals(returns[1].stringValue(), "foo");
+        Assert.assertEquals(returns[2].stringValue(), "true");
+    }
+
+    @Test
+    public void testGetFromNonArrayWithIndex() {
+        BValue[] returns = BRunUtil.invoke(compileResult, "testGetFromNonArrayWithIndex");
+        Assert.assertNull(returns[0]);
+        Assert.assertNull(returns[1]);
+        Assert.assertNull(returns[2]);
+    }
+
+    @Test
+    public void testSetToNonObjectWithKey() {
+        BValue[] returns = BRunUtil.invoke(compileResult, "testSetToNonObjectWithKey");
+        Assert.assertTrue(returns[0] instanceof BValueArray);
+        Assert.assertTrue(returns[1] instanceof BString);
+        Assert.assertTrue(returns[2] instanceof BBoolean);
+        Assert.assertEquals(returns[0].stringValue(), "[1, 2, 3]");
+        Assert.assertEquals(returns[1].stringValue(), "foo");
+        Assert.assertEquals(returns[2].stringValue(), "true");
+    }
+
+    public void testGetFromNonObjectWithKey() {
+        BValue[] returns = BRunUtil.invoke(compileResult, "testGetFromNonObjectWithKey");
+        Assert.assertNull(returns[0]);
+        Assert.assertNull(returns[1]);
+        Assert.assertNull(returns[2]);
+    }
+
+    @Test
     public void testGetStringInArray() {
         BValue[] returns = BRunUtil.invoke(compileResult, "testGetStringInArray");
         Assert.assertTrue(returns[0] instanceof BString);
@@ -343,7 +395,8 @@ public class BJSONValueTest {
     }
 
     @Test(expectedExceptions = {BLangRuntimeException.class},
-          expectedExceptionsMessageRegExp = ".*IndexOutOfRange message=array index out of range: index: 5, size: 3.*")
+          expectedExceptionsMessageRegExp = ".*failed to get element from json: array index out of " +
+                  "range: index: 5, size: 3.*")
     public void testGetArrayOutofBoundElement() {
         BRunUtil.invoke(compileResult, "testGetArrayOutofBoundElement");
     }
@@ -351,8 +404,7 @@ public class BJSONValueTest {
     @Test
     public void testGetElementFromPrimitive() {
         BValue[] returns = BRunUtil.invoke(compileResult, "testGetElementFromPrimitive");
-        String errorMsg = ((BMap<String, BString>) ((BError) returns[0]).getDetails()).get("message").stringValue();
-        Assert.assertEquals(errorMsg, "JSON value is not a mapping");
+        Assert.assertNull(returns[0]);
     }
     
     @Test
@@ -405,7 +457,7 @@ public class BJSONValueTest {
         BValue[] returns = BRunUtil.invoke(compileResult, "testJsonToJsonArrayInvalidCasting");
         Assert.assertTrue(returns[0] instanceof BError);
         String errorMsg = ((BMap<String, BString>) ((BError) returns[0]).getDetails()).get("message").stringValue();
-        Assert.assertEquals(errorMsg, "'json[]' value cannot be converted to 'json[][][]'");
+        Assert.assertEquals(errorMsg, "incompatible stamp operation: 'json[]' value cannot be stamped as 'json[][][]'");
     }
 
     @Test
@@ -414,13 +466,16 @@ public class BJSONValueTest {
 
         Assert.assertTrue(returns[0] instanceof BInteger);
         Assert.assertEquals(((BInteger) returns[0]).intValue(), 3);
+
+        Assert.assertTrue(returns[1] instanceof BInteger);
+        Assert.assertEquals(((BInteger) returns[1]).intValue(), 3);
     }
 
-    @Test
+    @Test(expectedExceptions = { BLangRuntimeException.class },
+            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}TypeCastError \\{\"message\":" +
+                    "\"incompatible types: '\\(\\)' cannot be cast to 'string'\"\\}.*")
     public void testGetFromNull() {
-        BValue[] returns = BRunUtil.invoke(compileResult, "testGetFromNull");
-        String errorMsg = ((BMap<String, BString>) ((BError) returns[0]).getDetails()).get("message").stringValue();
-        Assert.assertEquals(errorMsg, "JSON value is not a mapping");
+        BRunUtil.invoke(compileResult, "testGetFromNull");
     }
 
     @Test
@@ -437,43 +492,43 @@ public class BJSONValueTest {
     }
 
     @Test(expectedExceptions = { BLangRuntimeException.class },
-            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}TypeCastError message=" +
-                    "incompatible types: '\\(\\)' cannot be cast to 'int'.*")
+            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}TypeCastError \\{\"message\":" +
+                    "\"incompatible types: '\\(\\)' cannot be cast to 'int'\"\\}.*")
     public void testNullJsonToInt() {
         BRunUtil.invoke(compileResult, "testNullJsonToInt");
     }
 
     @Test(expectedExceptions = { BLangRuntimeException.class },
-            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}TypeCastError message=" +
-                    "incompatible types: '\\(\\)' cannot be cast to 'float'.*")
+            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}TypeCastError \\{\"message\":" +
+                    "\"incompatible types: '\\(\\)' cannot be cast to 'float'\"\\}.*")
     public void testNullJsonToFloat() {
         BRunUtil.invoke(compileResult, "testNullJsonToFloat");
     }
 
     @Test(expectedExceptions = { BLangRuntimeException.class },
-            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}TypeCastError message=" +
-                    "incompatible types: '\\(\\)' cannot be cast to 'string'.*")
+            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}TypeCastError \\{\"message\":" +
+                    "\"incompatible types: '\\(\\)' cannot be cast to 'string'\"\\}.*")
     public void testNullJsonToString() {
         BRunUtil.invoke(compileResult, "testNullJsonToString");
     }
 
     @Test(expectedExceptions = { BLangRuntimeException.class },
-            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}TypeCastError message=" +
-                    "incompatible types: '\\(\\)' cannot be cast to 'boolean'.*")
+            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}TypeCastError \\{\"message\":" +
+                    "\"incompatible types: '\\(\\)' cannot be cast to 'boolean'\"\\}.*")
     public void testNullJsonToBoolean() {
         BRunUtil.invoke(compileResult, "testNullJsonToBoolean");
     }
 
     @Test(expectedExceptions = { BLangRuntimeException.class },
-            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}ConversionError message=cannot convert " 
-                    + "'null' value to type 'map<json>'.*")
+            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}ConversionError \\{\"message\":\"cannot convert " 
+                    + "'null' value to type 'map<json>'\"\\}.*")
     public void testNullJsonToMap() {
         BRunUtil.invoke(compileResult, "testNullJsonToMap");
     }
 
     @Test(expectedExceptions = { BLangRuntimeException.class },
-            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}TypeCastError message=" +
-                    "incompatible types: '\\(\\)' cannot be cast to 'int\\[\\]'.*")
+            expectedExceptionsMessageRegExp = "error: \\{ballerina\\}TypeCastError \\{\"message\":" +
+                    "\"incompatible types: '\\(\\)' cannot be cast to 'int\\[\\]'\"\\}.*")
     public void testNullJsonToArray() {
         BRunUtil.invoke(compileResult, "testNullJsonToArray");
     }

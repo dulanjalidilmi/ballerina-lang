@@ -28,37 +28,36 @@ type Employee record {
     string batch;
 };
 
-function testConvertStampRecordToRecord() returns [Person, Employee]|error {
+function testConvertStampRecordToRecord() returns [Person, Employee] {
     Person p = { name: "John", age:25, status: "single", batch: "Batch9", school: "ABC College" };
-    Employee e = check Employee.constructFrom(p);
+    Employee e = Employee.convert(p);
     e.name = "Waruna";
-    e["age"] =30;
+    e.age =30;
     p.name = "Watson";
     return [p, e];
 }
 
 function testConvertStampRecordToJSON() returns [Employee, json]|error {
     Employee e = { name: "Waruna", status: "married", batch: "Batch9", school: "DEF College" };
-    json j = check json.constructFrom(e);
+    json j = check json.convert(e);
     e.name = "John";
-    map<json> nj = <map<json>> j;
-    nj["school"] = "ABC College";
-    return [e, <json>nj];
+    j["school"] = "ABC College";
+    return [e, j];
 }
 
 function testConvertStampRecordToMap() returns [Employee, map<any>]|error {
     Employee e = { name: "John", status: "single", batch: "Batch9", school: "ABC College" };
-    map<anydata> m = check map<anydata>.constructFrom(e);
+    map<anydata> m = check map<anydata>.convert(e);
     m["name"] = "Waruna";
     e.name = "Mike";
     return [e, m];
 }
 
-function testConvertStampTupleToMap() returns [[string, Employee], [string, Employee]]|error {
+function testConvertStampTupleToMap() returns [[string, Employee], [string, Employee]] {
     [string, Person] tupleValue = ["Waruna", { name: "John", age: 25, status: "single", batch: "Batch9", school:
     "ABC College" }];
 
-    [string, Employee] returnValue = check [string, Employee].constructFrom(tupleValue);
+    [string, Employee] returnValue = [string, Employee].convert(tupleValue);
     returnValue[0] = "Chathura";
     tupleValue[0] = "Vinod";
     return [tupleValue, returnValue];

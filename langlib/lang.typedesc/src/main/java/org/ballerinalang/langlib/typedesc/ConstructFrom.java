@@ -22,7 +22,6 @@ import org.ballerinalang.jvm.BallerinaErrors;
 import org.ballerinalang.jvm.JSONUtils;
 import org.ballerinalang.jvm.Strand;
 import org.ballerinalang.jvm.TypeChecker;
-import org.ballerinalang.jvm.XMLFactory;
 import org.ballerinalang.jvm.types.BType;
 import org.ballerinalang.jvm.types.BTypedescType;
 import org.ballerinalang.jvm.values.RefValue;
@@ -121,7 +120,7 @@ public class ConstructFrom {
                 case TypeTags.JSON_TAG:
                     return JSONUtils.toJSON((TableValue) inputValue);
                 case TypeTags.XML_TAG:
-                    return XMLFactory.tableToXML((TableValue) inputValue);
+                    // TODO:
                 default:
                     break;
             }

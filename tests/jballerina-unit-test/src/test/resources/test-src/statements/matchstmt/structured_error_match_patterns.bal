@@ -21,30 +21,17 @@ type Message record {
 };
 
 type ReasonRec record {
-    string x?;
-    error err?;
+    Message message;
+    string x;
 };
 
 type ReasonRecTup record {
-    [string, int] x?;
-    string reason?;
-    error err?;
-};
-
-type ErrorData record {
-    string a?;
-    error err?;
-    map<string> m?;
-};
-
-type ErrorData2 record {
-    string a?;
-    error err?;
-    map<string|boolean> m?;
+    Message message;
+    [string, int] x;
 };
 
 function testBasicErrorMatch() returns string {
-    error <string, ErrorData> err1 = error("Error Code", message = "Msg");
+    error <string, map<string>> err1 = error("Error Code", message = "Msg");
     match err1 {
         var error(reason, message = m) => return reason + ":" + <string>m;
     }
@@ -65,12 +52,12 @@ function testErrorRestParamMatch(int errorNo) returns string {
 function selectError(int errorNo) returns error {
     map<string> m1 = { m: "bhah" };
     var x1 = m1["m"];
-    error <string, ErrorData> err0 = error("Error Code", message = "Msg of error-0");
+    error <string, map<string>> err0 = error("Error Code", message = "Msg of error-0");
     Message mes = { a: "Hello" };
     [string, int] x = ["x", 1];
     error<string, ReasonRecTup> err1 = error("Error Code", message = mes, x = x);
     error<string, ReasonRec> err2 = error("Error Code", message = mes, x = "x");
-    error <string, ErrorData> err3 = error("Error Code", message = "message", blah = "bb", foo = "foo");
+    error <string, map<string>> err3 = error("Error Code", message = "message", blah = "bb", foo = "foo");
 
     match (errorNo) {
         0 => return err0;
@@ -82,7 +69,7 @@ function selectError(int errorNo) returns error {
 }
 
 function testBasicErrorMatch2() returns string {
-    error <string, ErrorData> err1 = error("Error Code", message = "Msg");
+    error <string, map<string>> err1 = error("Error Code", message = "Msg");
     [string, map<any>]|error t1 = err1;
     match t1 {
         var [reason, detail] => return "Matched with tuple : " + reason + " " + io:sprintf("%s", detail);
@@ -106,7 +93,7 @@ type Foo record {
 };
 
 type ER1 error <string, Foo>;
-type ER2 error <string, ErrorData>;
+type ER2 error <string, map<anydata>>;
 
 function testBasicErrorMatch4() returns string[] {
     ER1 er1 = error("Error 1", fatal = true, message = 1);
@@ -162,7 +149,7 @@ function testBasicErrorMatch6() returns string[] {
     map<string> m = { key: "value" };
     var mRes = trap panik();
     io:println(mRes);
-    string[] results = [foo4(m.get("key")), foo4(mRes)];
+    string[] results = [foo4(m.key), foo4(mRes)];
     return results;
 }
 
@@ -204,7 +191,7 @@ function testBasicErrorMatch7() returns string[] {
     Foo f = { fatal: true };
     error err1 = error("Error Code 1");
     error err2 = error("Error Code 1", message = "Something Wrong");
-    error <string, ErrorData2> err3 = error("Error Code 1", message = "Something Wrong", fatal = true);
+    error <string, map<string|boolean>> err3 = error("Error Code 1", message = "Something Wrong", fatal = true);
     Foo|error fe1 = err1;
     Foo|error fe2 = err2;
     string[] results = [foo6(f), foo6(fe1), foo6(fe2)];
@@ -223,17 +210,17 @@ type Fin1 "Error One"|"Error Two";
 type Fin2 "Error Three"|"Error Four";
 
 function testFiniteTypedReasonVariable() returns string[] {
-    error<Fin1, ErrorData2> err1 = error("Error One", message = "msgOne", fatal = true);
-    error<Fin2, ErrorData2> err2 = error("Error Three", message = "msgTwo", fatal = false);
+    error<Fin1, map<string|boolean>> err1 = error("Error One", message = "msgOne", fatal = true);
+    error<Fin2, map<string|boolean>> err2 = error("Error Three", message = "msgTwo", fatal = false);
 
-    error<Fin2, ErrorData2>|error<Fin1, ErrorData2> err3 = err1;
-    error<Fin2, ErrorData2>|error<Fin1, ErrorData2> err4 = err2;
+    error<Fin2, map<string|boolean>>|error<Fin1, map<string|boolean>> err3 = err1;
+    error<Fin2, map<string|boolean>>|error<Fin1, map<string|boolean>> err4 = err2;
 
     string[] results = [matching(err3), matching(err4)];
     return results;
 }
 
-function matching(error<Fin2, ErrorData2>|error<Fin1, ErrorData2> a) returns string {
+function matching(error<Fin2, map<string|boolean>>|error<Fin1, map<string|boolean>> a) returns string {
     match a {
         var error(reason, message = message, fatal = fatal) => return "reason = " + reason + ", message = " + <string>message + ", fatal = " + (<boolean>fatal ? "true" : "false");
         var x => return "Failed";
@@ -241,7 +228,7 @@ function matching(error<Fin2, ErrorData2>|error<Fin1, ErrorData2> a) returns str
 }
 
 function testErrorMatchPattern() returns string {
-    error <string, ErrorData> err1 = error("Error Code", message = "Msg");
+    error <string, map<string>> err1 = error("Error Code", message = "Msg");
     match err1 {
         var error(reason) => return reason;
         error(var reason, message = m, ... var rest) => return reason + ":" + <string>m;
@@ -250,7 +237,7 @@ function testErrorMatchPattern() returns string {
 }
 
 function testErrorConstReasonMatchPattern() returns string {
-    error <string, ErrorData> err1 = error("Error Code", message = "Msg");
+    error <string, map<string>> err1 = error("Error Code", message = "Msg");
     match err1 {
         var error(reason) => return reason;
         error("Error Code", message = m, ... var rest) => return "Const reason" + ":" + <string>m;

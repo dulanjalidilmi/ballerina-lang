@@ -173,7 +173,7 @@ function recordsTest() returns string {
         string...;
     |} adr = { city: "London", country: "UK" };
 
-    adr["street"] = "baker";
+    adr.street = "baker";
 
    return acceptRecord(g).name;
 }
@@ -281,7 +281,7 @@ function testNullAsJsonVal () returns (json) {
     return j;
 }
 
-function testJsonWithNull () returns [json, any|error] {
+function testJsonWithNull () returns [json, any] {
     json j = {"name":null};
     return [j, j.name];
 }
@@ -333,131 +333,114 @@ function testGetBoolean () returns (boolean) {
     return jBoolean;
 }
 
-function testGetJson () returns (json|error) {
+function testGetJson () returns (json) {
     json j = {address:{city:"Colombo", "country":"SriLanka"}};
     return j.address;
 }
 
-function testGetNonExistingElement () returns (any|error) {
+function testGetNonExistingElement () returns (any) {
     json j2 = {age:43};
     return j2.name;
 }
 
 function testAddString () returns (json) {
-    json jj = {fname:"Supun"};
-    map<json> j = <map<json>>jj;
-    j["lname"] = "Setunga";
+    json j = {fname:"Supun"};
+    j.lname = "Setunga";
     return j;
 }
 
 function testAddInt () returns (json) {
-    json jj = {fname:"Supun"};
-    map<json> j = <map<json>>jj;
-    j["age"] = 25;
+    json j = {fname:"Supun"};
+    j.age = 25;
     return j;
 }
 
 function testAddFloat () returns (json) {
-    json jj = {fname:"Supun"};
-    map<json> j = <map<json>>jj;
-    j["score"] = 4.37;
+    json j = {fname:"Supun"};
+    j.score = 4.37;
     return j;
 }
 
 function testAddBoolean ()returns (json) {
-    json jj = {fname:"Supun"};
-    map<json> j = <map<json>>jj;
-    j["status"] = true;
+    json j = {fname:"Supun"};
+    j.status = true;
     return j;
 }
 
 function testAddJson ()returns (json) {
-    json jj = {fname:"Supun"};
-    map<json> j = <map<json>>jj;
-    j["address"] = {country:"SriLanka"};
+    json j = {fname:"Supun"};
+    j.address = {country:"SriLanka"};
     return j;
 }
 
 function testUpdateString ()returns (json) {
-    json jj = {fname:"Supun", lname:"Thilina"};
-    map<json> j = <map<json>>jj;
-    j["lname"] = "Setunga";
+    json j = {fname:"Supun", lname:"Thilina"};
+    j.lname = "Setunga";
     return j;
 }
 
 function testUpdateInt ()returns (json) {
-    json jj = {fname:"Supun", age:30};
-    map<json> j = <map<json>>jj;
-    j["age"] = 25;
+    json j = {fname:"Supun", age:30};
+    j.age = 25;
     return j;
 }
 
 function testUpdateFloat () returns(json) {
-    json jj = {fname:"Supun", score:7.65};
-    map<json> j = <map<json>>jj;
-    j["score"] = 4.37;
+    json j = {fname:"Supun", score:7.65};
+    j.score = 4.37;
     return j;
 }
 
 function testUpdateBoolean () returns(json) {
-    json jj = {fname:"Supun", status:false};
-    map<json> j = <map<json>>jj;
-    j["status"] = true;
-    return jj;
+    json j = {fname:"Supun", status:false};
+    j.status = true;
+    return j;
 }
 
 function testUpdateJson () returns(json) {
-    json jj = {fname:"Supun", address:{country:"USA"}};
-    map<json> j = <map<json>>jj;
-    j["address"] = {country:"SriLanka"};
+    json j = {fname:"Supun", address:{country:"USA"}};
+    j.address = {country:"SriLanka"};
     return j;
 }
 
 function testUpdateStringInArray () returns(json) {
-    json jj = ["a", "b", "c"];
-    json[] j = <json[]>jj;
+    json j = ["a", "b", "c"];
     j[1] = "d";
     return j;
 }
 
 function testUpdateIntInArray () returns (json) {
-    json jj = ["a", "b", "c"];
-    json[] j = <json[]>jj;
+    json j = ["a", "b", "c"];
     j[1] = 64;
     return j;
 }
 
 function testUpdateFloatInArray () returns (json) {
-    json jj = ["a", "b", "c"];
-    json[] j = <json[]>jj;
+    json j = ["a", "b", "c"];
     j[1] = 4.72;
     return j;
 }
 
 function testUpdateBooleanInArray () returns (json) {
-    json jj = ["a", "b", "c"];
-    json[] j = <json[]>jj;
+    json j = ["a", "b", "c"];
     j[1] = true;
     return j;
 }
 
 function testUpdateNullInArray () returns (json) {
-    json jj = ["a", "b", "c"];
-    json[] j = <json[]>jj;
+    json j = ["a", "b", "c"];
     j[1] = null;
     return j;
 }
 
 function testUpdateJsonInArray () returns (json) {
-    json jj = ["a", "b", "c"];
-    json[] j = <json[]>jj;
+    json j = ["a", "b", "c"];
     j[1] = {country:"SriLanka"};
     return j;
 }
 
 function testUpdateJsonArrayInArray () returns (json) {
-    json jj = ["a", "b", "c"];
-    json[] j = <json[]>jj;
+    json j = ["a", "b", "c"];
     j[1] = [1, 2, 3];
     return j;
 }
@@ -472,9 +455,9 @@ function testGetNestedJsonElement () returns [string, string, string, string] {
     string cityString3;
     string cityString4;
     cityString1 = <string>j.address.city;
-    cityString2 = <string>j.address.city;
-    cityString3 = <string>j.address.city;
-    cityString4 = <string>j.address.city;
+    cityString2 = <string>j["address"]["city"];
+    cityString3 = <string>j.address["city"];
+    cityString4 = <string>j[addressKey][cityKey];
     return [cityString1, cityString2, cityString3, cityString4];
 }
 
@@ -489,25 +472,20 @@ function testJsonExprAsIndex () returns (string) {
     string key;
     key = <string>j.address.area;
     string value;
-    map<json> adr = <map<json>>j.address;
-    value = <string>adr[key];
+    value = <string>j.address[key];
     return value;
 }
 
 function testSetArrayOutofBoundElement () returns (json) {
-    json jj = [1, 2, 3];
-    json[] j = <json[]>jj;
+    json j = [1, 2, 3];
     j[7] = 8;
     return j;
 }
 
 function testSetToNonArrayWithIndex () returns [json, json, json] {
-    json jj1 = {name:"supun"};
-    json jj2 = "foo";
-    json jj3 = true;
-    json[] j1 = <json[]>jj1;
-    json[] j2 = <json[]>jj2;
-    json[] j3 = <json[]>jj3;
+    json j1 = {name:"supun"};
+    json j2 = "foo";
+    json j3 = true;
     j1[7] = 8;
     j2[7] = 8;
     j3[7] = 8;
@@ -515,24 +493,16 @@ function testSetToNonArrayWithIndex () returns [json, json, json] {
 }
 
 function testGetFromNonArrayWithIndex () returns [json, json, json] {
-    json jj1 = {name:"supun"};
-    json jj2 = "foo";
-    json jj3 = true;
-    json[] j1 = <json[]>jj1;
-    json[] j2 = <json[]>jj2;
-    json[] j3 = <json[]>jj3;
-
+    json j1 = {name:"supun"};
+    json j2 = "foo";
+    json j3 = true;
     return [j1[7], j2[7], j3[7]];
 }
 
 function testSetToNonObjectWithKey () returns [json, json, json] {
-    json jj1 = [1, 2, 3];
-    json jj2 = "foo";
-    json jj3 = true;
-
-    map<json> j1 = <map<json>>jj1;
-    map<json> j2 = <map<json>>jj2;
-    map<json> j3 = <map<json>>jj3;
+    json j1 = [1, 2, 3];
+    json j2 = "foo";
+    json j3 = true;
 
     j1["name"] = "Supun";
     j2["name"] = "Supun";
@@ -540,7 +510,7 @@ function testSetToNonObjectWithKey () returns [json, json, json] {
     return [j1, j2, j3];
 }
 
-function testGetFromNonObjectWithKey () returns [json|error, json|error, json|error] {
+function testGetFromNonObjectWithKey () returns [json, json, json] {
     json j1 = [1, 2, 3];
     json j2 = "foo";
     json j3 = true;
@@ -548,32 +518,28 @@ function testGetFromNonObjectWithKey () returns [json|error, json|error, json|er
 }
 
 function testGetStringInArray () returns (string) {
-    json jj = ["a", "b", "c"];
+    json j = ["a", "b", "c"];
     string value;
-    json[] j = <json[]>jj;
     value = <string>j[1];
     return value;
 }
 
 function testGetArrayOutofBoundElement () returns (string) {
-    json jj = [1, 2, 3];
-    json[] j = <json[]>jj;
+    json j = [1, 2, 3];
     string value;
     value = <string>j[5];
     return value;
 }
 
-function testGetElementFromPrimitive () returns (json|error) {
+function testGetElementFromPrimitive () returns (json) {
     json j = {name:"Supun"};
     return j.name.fname;
 }
 
 function testUpdateNestedElement () returns (json) {
-    json jjj = {details:{fname:"Supun", lname:"Thilina"}};
-    map<json> jj = <map<json>>jjj;
-    map<json> j = <map<json>>jj["details"];
-    j["lname"] = "Setunga";
-    return jjj;
+    json j = {details:{fname:"Supun", lname:"Thilina"}};
+    j.details.lname = "Setunga";
+    return j;
 }
 
 function testJsonArrayToJsonCasting () returns (json) {
@@ -590,10 +556,8 @@ function testGetFromNull () returns (string) {
 }
 
 function testAddToNull () returns (json) {
-    json jjj = {name:"Supun", address:null};
-    map<json> jj = <map<json>>jjj;
-    map<json> j = <map<json>>jj["address"];
-    j["country"] = "SriLanka";
+    json j = {name:"Supun", address:null};
+    j.address.country = "SriLanka";
     return j;
 }
 
@@ -629,28 +593,28 @@ function testNullJsonToArray() returns (int[]) {
 
 function testIntArrayToJsonAssignment() returns [json, json] {
     int[] a = [1, 5, 9];
-    json[] j = <json[]>a;
+    json j = a;
     j[3] = 4;
     return [j, j[1]];
 }
 
 function testFloatArrayToJsonAssignment() returns [json, json] {
     float[] f = [1.3, 5.4, 9.4];
-    json[] j = <json[]>f;
+    json j = f;
     j[3] = 4.5;
     return [j, j[1]];
 }
 
 function testStringArrayToJsonAssignment() returns [json, json] {
     string[] s = ["apple", "orange"];
-    json[] j = <json[]>s;
+    json j = s;
     j[2] = "grape";
     return [j, j[1]];
 }
 
 function testBooleanArrayToJsonAssignment() returns [json, json] {
     boolean[] b = [true, true, false];
-    json[] j = <json[]>b;
+    json j = b;
     j[3] = true;
     return [j, j[1]];
 }

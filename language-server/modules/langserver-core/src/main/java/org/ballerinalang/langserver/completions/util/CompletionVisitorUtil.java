@@ -270,7 +270,6 @@ public class CompletionVisitorUtil {
      *
      * @param node BLang node to evaluate
      * @param lsContext Language server operation context
-     * @return {@link Boolean} within the argument
      */
     public static boolean withinInvocationArguments(BLangNode node, LSContext lsContext) {
         Position position = lsContext.get(DocumentServiceKeys.POSITION_KEY).getPosition();

@@ -1,4 +1,4 @@
-import ballerinax/java.jdbc;
+import ballerinax/jdbc;
 import ballerina/io;
 import ballerina/runtime;
 

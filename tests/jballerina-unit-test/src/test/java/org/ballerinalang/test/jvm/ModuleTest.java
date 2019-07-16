@@ -37,7 +37,7 @@ public class ModuleTest {
 
     @BeforeClass
     public void setup() {
-        compileResult = BCompileUtil.compile("test-src/jvm/TestProject", "module-test");
+        compileResult = BCompileUtil.compile("test-src/jvm/module-test.bal");
     }
 
     @Test(description = "Test module")

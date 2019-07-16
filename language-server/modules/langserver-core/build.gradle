@@ -201,3 +201,8 @@ test {
         suites 'src/test/resources/testng.xml'
     }
 }
+
+createJavadoc {
+    // TODO: remove following, it fails at org.eclipse currently
+    exclude "**"
+}

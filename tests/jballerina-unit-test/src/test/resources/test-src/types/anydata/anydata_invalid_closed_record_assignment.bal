@@ -64,7 +64,7 @@ type ClosedFoo3 record {|
 
 type ClosedFoo4 record {|
     int ca;
-    typedesc<any> td;
+    typedesc td;
 |};
 
 type ClosedFoo5 record {|

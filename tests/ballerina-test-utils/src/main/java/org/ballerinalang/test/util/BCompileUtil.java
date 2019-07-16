@@ -257,22 +257,10 @@ public class BCompileUtil {
      * @return Semantic errors
      */
     public static CompileResult compile(String sourceRoot, String packageName) {
-        return compile(sourceRoot, packageName, true);
-    }
-
-    /**
-     * Compile and return the semantic errors.
-     *
-     * @param sourceRoot  root path of the modules
-     * @param packageName name of the module to compile
-     * @param init init the module or not
-     * @return Semantic errors
-     */
-    public static CompileResult compile(String sourceRoot, String packageName, boolean init) {
         String filePath = concatFileName(sourceRoot, resourceDir);
         Path rootPath = Paths.get(filePath);
         Path packagePath = Paths.get(packageName);
-        return getCompileResult(packageName, rootPath, packagePath, init);
+        return getCompileResult(packageName, rootPath, packagePath);
     }
 
     /**
@@ -284,26 +272,13 @@ public class BCompileUtil {
      * @return Semantic errors
      */
     public static CompileResult compile(Object obj, String sourceRoot, String packageName) {
-        return compile(obj, sourceRoot, packageName, true);
-    }
-
-    /**
-     * Compile and return the semantic errors.
-     *
-     * @param obj this is to find the original callers location.
-     * @param sourceRoot  root path of the modules
-     * @param packageName name of the module to compile
-     * @param init the module or not
-     * @return Semantic errors
-     */
-    public static CompileResult compile(Object obj, String sourceRoot, String packageName, boolean init) {
         String filePath = concatFileName(sourceRoot, resourceDir);
         Path rootPath = Paths.get(filePath);
         Path packagePath = Paths.get(packageName);
-        return getCompileResult(packageName, rootPath, packagePath, init);
+        return getCompileResult(packageName, rootPath, packagePath);
     }
 
-    private static CompileResult getCompileResult(String packageName, Path rootPath, Path packagePath, boolean init) {
+    private static CompileResult getCompileResult(String packageName, Path rootPath, Path packagePath) {
         String effectiveSource;
         if (Files.isDirectory(packagePath)) {
             String[] pkgParts = packageName.split("\\/");
@@ -322,7 +297,7 @@ public class BCompileUtil {
             effectiveSource = pkgId.getName().getValue();
 
             if (jBallerinaTestsEnabled()) {
-                return compileOnJBallerina(rootPath.toString(), effectiveSource, false, init);
+                return compileOnJBallerina(rootPath.toString(), effectiveSource, false);
             }
 
             return compile(rootPath.toString(), effectiveSource, CompilerPhase.CODE_GEN);
@@ -331,7 +306,7 @@ public class BCompileUtil {
         effectiveSource = packageName;
         if (jBallerinaTestsEnabled()) {
             return compileOnJBallerina(rootPath.toString(), effectiveSource,
-                    new FileSystemProjectDirectory(rootPath), init);
+                    new FileSystemProjectDirectory(rootPath));
         }
 
         return compile(rootPath.toString(), effectiveSource, CompilerPhase.CODE_GEN,
@@ -676,19 +651,19 @@ public class BCompileUtil {
     }
 
     private static CompileResult compileOnJBallerina(String sourceRoot, String packageName,
-                                                     SourceDirectory sourceDirectory, boolean init) {
+                                                     SourceDirectory sourceDirectory) {
         CompilerContext context = new CompilerContext();
         context.put(SourceDirectory.class, sourceDirectory);
-        return compileOnJBallerina(context, sourceRoot, packageName, false, init);
+        return compileOnJBallerina(context, sourceRoot, packageName, false);
     }
 
-    public static CompileResult compileOnJBallerina(String sourceRoot, String packageName, boolean temp, boolean init) {
+    public static CompileResult compileOnJBallerina(String sourceRoot, String packageName, boolean temp) {
         CompilerContext context = new CompilerContext();
-        return compileOnJBallerina(context, sourceRoot, packageName, temp, init);
+        return compileOnJBallerina(context, sourceRoot, packageName, temp);
     }
 
     public static CompileResult compileOnJBallerina(CompilerContext context, String sourceRoot, String packageName,
-            boolean temp, boolean init) {
+            boolean temp) {
         CompilerOptions options = CompilerOptions.getInstance(context);
         options.put(PROJECT_DIR, sourceRoot);
         options.put(COMPILER_PHASE, CompilerPhase.BIR_GEN.toString());
@@ -711,9 +686,7 @@ public class BCompileUtil {
             compileResult.setClassLoader(cl);
 
             // TODO: calling run on compile method is wrong, should be called from BRunUtil
-            if (init) {
-                runInit(bLangPackage, cl, temp);
-            }
+            runInit(bLangPackage, cl, temp);
 
             return compileResult;
 
@@ -746,6 +719,6 @@ public class BCompileUtil {
         Path sourcePath = Paths.get(sourceFilePath);
         String packageName = sourcePath.getFileName().toString();
         Path sourceRoot = resourceDir.resolve(sourcePath.getParent());
-        return compileOnJBallerina(sourceRoot.toString(), packageName, temp, true);
+        return compileOnJBallerina(sourceRoot.toString(), packageName, temp);
     }
 }

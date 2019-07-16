@@ -42,8 +42,7 @@ public class ZipConverter extends PathConverter {
 
     private static Path resolveIntoArchive(Path newPath) {
         String pathPart = newPath.toString();
-        if ((pathPart.endsWith(".zip") || pathPart.endsWith(".jar") || pathPart.endsWith(".balo")) &&
-            Files.isRegularFile(newPath)) {
+        if ((pathPart.endsWith(".zip") || pathPart.endsWith(".jar")) && Files.isRegularFile(newPath)) {
             return pathWithinZip(newPath.toUri());
         } else {
             return newPath;

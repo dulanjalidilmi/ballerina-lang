@@ -20,7 +20,7 @@ const ERROR_REASON_ONE = "reason one";
 const ERROR_REASON_TWO = "reason two";
 
 type UserDefErrorOne error<ErrorReasons>;
-type UserDefErrorTwo error<ERROR_REASON_ONE>;
+type UserDefErrorTwo error<ERROR_REASON_ONE, TrxErrorData>;
 
 function testInvalidErrorReasonWithUserDefinedReasonType() returns error {
     UserDefErrorOne e = error("");
@@ -47,7 +47,7 @@ function testInvalidErrorTypeInFunc() {
     error<boolean> e = error(true);
 }
 
-type MyError error<string>;
+type MyError error<string, MyErrorErrorData>;
 
 function testSelfReferencingErrorConstructor() {
     error e3 = error(e3.reason(), cause = e3);

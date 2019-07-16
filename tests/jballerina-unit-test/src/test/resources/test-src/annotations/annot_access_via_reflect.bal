@@ -15,7 +15,6 @@
 // under the License.
 import ballerina/http;
 import ballerina/reflect;
-import ballerina/'lang\.object as lang;
 
 type Annot record {
     string foo;
@@ -62,7 +61,7 @@ function testServiceAnnotAccess() returns boolean {
 function testResourceAnnotAccess() returns boolean {
     map<int>? annot = <map<int>?> reflect:getResourceAnnotations(ser, "res", "v1");
     if (annot is map<int>) {
-        if (annot.length() != 2 || annot["first"] != 1 || annot["second"] != 2) {
+        if (annot.length() != 2 || annot.first != 1 || annot.second != 2) {
             return false;
         }
     } else {
@@ -81,7 +80,7 @@ function testResourceAnnotAccess() returns boolean {
 
     // Temporary tests for parameters and return types.
     map<any> allAnnots = <map<any>> reflect:getResourceAnnotations(ser, "res", "$param$.intVal");
-    TRUE? paramAnnot = <TRUE?> allAnnots["v2"];
+    TRUE? paramAnnot = <TRUE?> allAnnots.v2;
     if (paramAnnot is ()) {
         return false;
     }
@@ -92,21 +91,21 @@ function testResourceAnnotAccess() returns boolean {
     }
 
     allAnnots = <map<any>> reflect:getResourceAnnotations(ser, "res", "$returns$");
-    Annot[]? annots = <Annot[]?> allAnnots["v3"];
+    Annot[]? annots = <Annot[]?> allAnnots.v3;
     if (annots is Annot[]) {
-        if (annots.length() != 2) {
+        if (annot.length() != 2) {
             return false;
         }
 
         Annot annot1 = annots[0];
         Annot annot2 = annots[1];
-        return annot1.foo == "v41" && annot2.foo == "v42" && annot2["bar"] == 2;
+        return annot1.foo == "v41" && annot2.foo == "v42" && annot2.bar == 2;
     }
     return false;
 }
 
 type Listener object {
-    *lang:AbstractListener;
+    *AbstractListener;
 
     public function __init() {
     }

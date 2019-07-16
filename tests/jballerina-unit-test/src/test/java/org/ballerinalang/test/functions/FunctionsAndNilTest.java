@@ -26,6 +26,7 @@ import org.ballerinalang.test.services.testutils.MessageUtils;
 import org.ballerinalang.test.services.testutils.Services;
 import org.ballerinalang.test.util.BCompileUtil;
 import org.ballerinalang.test.util.BRunUtil;
+import org.ballerinalang.test.util.BServiceUtil;
 import org.ballerinalang.test.util.CompileResult;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -100,9 +101,10 @@ public class FunctionsAndNilTest {
 
     @Test(description = "Test count function inside resource.")
     public void testCountFunctionInsideResource() throws Exception {
-        CompileResult result1 = BCompileUtil.compile("test-src/functions/count-in-resource.bal");
+        CompileResult result1 =
+                BServiceUtil.setupProgramFile(this, "test-src/functions/count-in-resource.bal");
         HTTPTestRequest request = MessageUtils.generateHTTPMessage("/test/resource", "GET");
-        HttpCarbonMessage response = Services.invoke(9090, request);
+        HttpCarbonMessage response = Services.invokeNew(result1, "testEP", request);
 
         Assert.assertNotNull(response, "Response message not found");
         BValue bJson = JsonParser.parse(new HttpMessageDataStreamer(response).getInputStream());

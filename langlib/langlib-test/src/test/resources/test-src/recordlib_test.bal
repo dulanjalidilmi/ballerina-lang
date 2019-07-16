@@ -25,15 +25,15 @@ function testLength() returns int {
     return person.length();
 }
 
-function testGet(string key) returns anydata {
+function testGet(string key) returns string|int {
     return person.get(key);
 }
 
-function testEntries() returns map<[string, anydata]> {
+function testEntries() returns map<[string, string|int]> {
     return person.entries();
 }
 
-function testRemove(string key) returns anydata {
+function testRemove(string key) returns string|int {
     Person anotherPerson = {name: "Jane Doe", age: 30};
     return anotherPerson.remove(key);
 }
@@ -80,12 +80,12 @@ function testForEach() returns string {
     return result;
 }
 
-type Grade record {|
+type Grade record {
     int maths;
     int physics;
     int chemistry;
     int ict;
-|};
+};
 
 Grade grades = {maths: 45, physics: 75, chemistry: 40, ict: 85};
 

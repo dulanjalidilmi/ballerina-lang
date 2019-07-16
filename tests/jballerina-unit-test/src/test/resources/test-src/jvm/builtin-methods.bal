@@ -19,7 +19,17 @@ function testClone() returns map<anydata> {
     return m.clone();
 }
 
-function testCloneAny() returns map<any>|error {
+function testFreeze() returns map<anydata> {
     map<anydata> m = {"test": "sample"};
+    return m.freeze();
+}
+
+function testCloneAny() returns map<any>|error {
+    map<any> m = {"test": "sample"};
     return m.clone();
+}
+
+function testFreezeAny() returns map<any>|error {
+    map<any> m = {"test": "sample"};
+    return m.freeze();
 }

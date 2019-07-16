@@ -60,7 +60,7 @@ public class NativeConversionNegativeTest {
         // check the error
         Assert.assertTrue(returns[0] instanceof BError);
         String errorMsg = ((BMap<String, BValue>) ((BError) returns[0]).getDetails()).get("message").stringValue();
-        Assert.assertEquals(errorMsg, "'map<json>' value cannot be converted to 'Person'");
+        Assert.assertEquals(errorMsg, "'json' value cannot be converted to 'Person'");
     }
 
     @Test
@@ -68,7 +68,8 @@ public class NativeConversionNegativeTest {
         BValue[] returns = BRunUtil.invoke(negativeResult, "testEmptyJSONtoStructWithoutDefaults");
         Assert.assertTrue(returns[0] instanceof BError);
         String errorMsg = ((BMap<String, BValue>) ((BError) returns[0]).getDetails()).get("message").stringValue();
-        Assert.assertEquals(errorMsg, "'map<json>' value cannot be converted to 'StructWithoutDefaults'");
+        Assert.assertEquals(errorMsg, "'json' value cannot be converted to "
+                + "'StructWithoutDefaults'");
     }
 
     @Test
@@ -76,7 +77,8 @@ public class NativeConversionNegativeTest {
         BValue[] returns = BRunUtil.invoke(negativeResult, "testEmptyMaptoStructWithDefaults");
         Assert.assertTrue(returns[0] instanceof BError);
         String errorMsg = ((BMap<String, BValue>) ((BError) returns[0]).getDetails()).get("message").stringValue();
-        Assert.assertEquals(errorMsg, "'map<anydata>' value cannot be converted to 'StructWithDefaults'");
+        Assert.assertEquals(errorMsg, "'map' value cannot be converted to "
+                + "'StructWithDefaults'");
     }
 
     @Test
@@ -84,7 +86,8 @@ public class NativeConversionNegativeTest {
         BValue[] returns = BRunUtil.invoke(negativeResult, "testEmptyMaptoStructWithoutDefaults");
         Assert.assertTrue(returns[0] instanceof BError);
         String errorMsg = ((BMap<String, BValue>) ((BError) returns[0]).getDetails()).get("message").stringValue();
-        Assert.assertEquals(errorMsg, "'map<anydata>' value cannot be converted to 'StructWithoutDefaults'");
+        Assert.assertEquals(errorMsg, "'map' value cannot be converted to "
+                + "'StructWithoutDefaults'");
     }
 
     @Test(description = "Test performing an invalid tuple conversion")
@@ -103,18 +106,33 @@ public class NativeConversionNegativeTest {
         Assert.assertEquals(errorMsg, "'TX[]' value cannot be converted to 'json'");
     }
 
-    @Test(description = "Test passing tainted value with convert", groups = "brokenOnLangLibChange")
+    @Test(description = "Test passing tainted value with convert")
     public void testTaintedValue() {
         Assert.assertEquals(taintCheckResult.getErrorCount(), 1);
-        BAssertUtil.validateError(taintCheckResult, 0, "tainted value passed to untainted " +
-                "parameter 'intArg'", 28, 22);
+        BAssertUtil.validateError(taintCheckResult, 0, "tainted value passed to untainted parameter 'intArg'", 28, 22);
+    }
+
+    @Test(description = "Test convert function with multiple arguments")
+    public void testFloatToIntWithMultipleArguments() {
+        Assert.assertEquals(negativeCompileResult.getErrorCount(), 4);
+        BAssertUtil.validateError(negativeCompileResult, 0, "too many arguments in call to 'convert()'", 48, 12);
+    }
+
+    @Test(description = "Test convert function with no arguments")
+    public void testFloatToIntWithNoArguments() {
+        BAssertUtil.validateError(negativeCompileResult, 1, "not enough arguments in call to 'convert()'", 53, 12);
     }
 
     @Test(description = "Test object conversions not supported")
     public void testObjectToJson() {
+        BAssertUtil.validateError(negativeCompileResult, 2, "incompatible types: 'PersonObj' cannot be converted to "
+                + "'json'", 58, 12);
+    }
 
-        BAssertUtil.validateError(negativeCompileResult, 0, "incompatible types: expected 'anydata', found 'PersonObj'",
-                48, 31);
+    @Test
+    public void testTypeCheckingRecordToMapConversion() {
+        BAssertUtil.validateError(negativeCompileResult, 3, "incompatible types: 'Person2' cannot be converted to "
+                + "'map<int>'", 63, 12);
     }
 
     @Test
@@ -122,7 +140,8 @@ public class NativeConversionNegativeTest {
         BValue[] returns = BRunUtil.invoke(negativeResult, "testIncompatibleImplicitConversion");
         Assert.assertTrue(returns[0] instanceof BError);
         String errorMsg = ((BMap<String, BValue>) ((BError) returns[0]).getDetails()).get("message").stringValue();
-        Assert.assertEquals(errorMsg, "'string' value cannot be converted to 'int'");
+        Assert.assertEquals(errorMsg, "'string' value 'abjd' cannot be converted to "
+                + "'int'");
     }
 
     @Test(description = "Test converting record to record which has cyclic reference to its own value.")

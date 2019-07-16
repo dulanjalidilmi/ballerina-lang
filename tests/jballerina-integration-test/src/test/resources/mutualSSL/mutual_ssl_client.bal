@@ -49,11 +49,9 @@ public function main() {
         if (payload is string) {
             io:println(payload);
         } else {
-            error err = payload;
-            io:println(<string> err.detail()["message"]);
+            io:println(<string> payload.detail().message);
         }
     } else {
-        error err = resp;
-        io:println(<string> err.detail()["message"]);
+        io:println(<string> resp.detail().message);
     }
 }

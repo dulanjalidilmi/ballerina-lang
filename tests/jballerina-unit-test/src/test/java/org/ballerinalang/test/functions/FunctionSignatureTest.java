@@ -42,7 +42,7 @@ public class FunctionSignatureTest {
     @BeforeClass
     public void setup() {
         result = BCompileUtil.compile("test-src/functions/different-function-signatures.bal");
-        pkgResult = BCompileUtil.compile(this, "test-src/functions/TestProj", "a.b");
+        pkgResult = BCompileUtil.compile(this, "test-src/functions/", "a.b");
     }
 
     @Test
@@ -376,7 +376,7 @@ public class FunctionSignatureTest {
         Assert.assertEquals(returns[5].stringValue(), "[]");
     }
 
-    @Test(enabled = false) // disabling due to, external functions not yet supported in tests
+    @Test
     public void testOptionalArgsInNativeFunc() {
         NativeElementRepository repo = NativeUnitLoader.getInstance().getNativeElementRepository();
         StandardNativeElementProvider provider = new StandardNativeElementProvider();
@@ -436,7 +436,7 @@ public class FunctionSignatureTest {
         Assert.assertEquals(returns[1].stringValue(), "inner default world");
     }
 
-    @Test(groups = { "brokenOnLangLibChange" })
+    @Test(description = "Test object outer function with defaultable param")
     public void defaultValueForObjectOuterFunctionParam() {
         BValue[] returns = BRunUtil.invoke(result, "testDefaultableParamOuterFunc");
 

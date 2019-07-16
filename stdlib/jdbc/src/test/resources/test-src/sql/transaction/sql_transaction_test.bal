@@ -15,7 +15,7 @@
 
 import ballerina/io;
 import ballerina/runtime;
-import ballerinax/java.jdbc;
+import ballerinax/jdbc;
 import ballerina/transactions;
 
 type ResultCount record {

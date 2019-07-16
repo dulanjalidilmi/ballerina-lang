@@ -1,19 +1,3 @@
-// Copyright (c) 2019 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-//
-// WSO2 Inc. licenses this file to you under the Apache License,
-// Version 2.0 (the "License"); you may not use this file except
-// in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-
 import eq;
 import eq2;
 import req;
@@ -78,7 +62,7 @@ function testEqOfPublicStructs () returns string {
     eq:closedEmployee e = {age:14, name:"rat"};
     e.ssn = "234-56-7890:employee";
 
-    eq:closedPerson p = eq:closedPerson.constructFrom(e);
+    eq:closedPerson p = eq:closedPerson.convert(e);
 
     return p.ssn;
 }
@@ -173,7 +157,7 @@ function testRuntimeEqPublicStructsInSamePackage () returns string|error {
 
     userPA uA = uFoo;
 
-    var uB = userPB.constructFrom(uA);
+    var uB = userPB.convert(uA);
     return uB.name;
 }
 
@@ -193,7 +177,7 @@ function testRuntimeEqPublicStructs1 () returns string|error {
     userPA uA = uFoo;
 
     // This is a unsafe cast
-    var uB  = req2:closedUserPB.constructFrom(uA);
+    var uB  = req2:closedUserPB.convert(uA);
     return uB.name;
 }
 

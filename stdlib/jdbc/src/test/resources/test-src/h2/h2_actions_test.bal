@@ -14,7 +14,7 @@
 // under the License.
 
 import ballerina/io;
-import ballerinax/java.jdbc;
+import ballerinax/jdbc;
 
 public type Customer record {
     int customerId;
@@ -88,7 +88,7 @@ function testCall() returns @tainted string {
         return "nil";
     } else {
         error e = ret;
-        return <string> e.detail()["message"];
+        return <string>e.detail().message;
     }
 
     string name = "";
@@ -118,7 +118,7 @@ function testGeneratedKeyOnInsert() returns string|int {
         returnVal = x.updatedRowCount;
     } else {
         error e = x;
-        returnVal = <string> e.detail()["message"];
+        returnVal = <string>e.detail().message;
     }
 
     checkpanic testDB.stop();
@@ -149,9 +149,16 @@ function testBatchUpdate() returns int[] {
     jdbc:Parameter para8 = { sqlType: jdbc:TYPE_VARCHAR, value: "UK" };
     jdbc:Parameter?[] parameters2 = [para5, para6, para7, para8];
 
-    jdbc:BatchUpdateResult x = testDB->batchUpdate("Insert into Customers values (?,?,?,?)", false, parameters1, parameters2);
+    var x = testDB->batchUpdate("Insert into Customers values (?,?,?,?)", parameters1, parameters2);
+
+    int[] ret = [];
+    if (x is int[]) {
+        ret = x;
+    } else {
+        ret = [];
+    }
     checkpanic testDB.stop();
-    return x.updatedRowCount;
+    return ret;
 }
 
 function testUpdateInMemory() returns @tainted [int, string] {
@@ -175,7 +182,7 @@ function testUpdateInMemory() returns @tainted [int, string] {
     var x = testDB->select("SELECT  * from Customers2", Customer);
     string s = "";
     if (x is table<Customer>) {
-        var res = typedesc<json>.constructFrom(x);
+        var res = json.convert(x);
         if (res is json) {
             s = res.toString();
         }
@@ -275,7 +282,7 @@ function testH2MemDBUpdate() returns [int, string] {
 
     string data = "";
     if (dt is table<record {}>) {
-        var j = typedesc<json>.constructFrom(dt);
+        var j = json.convert(dt);
         if (j is json) {
             data = io:sprintf("%s", j);
         }

@@ -851,7 +851,7 @@
       ]
     },
     {
-      "label": "ballerinax/java.jdbc",
+      "label": "ballerinax/jdbc",
       "kind": "Module",
       "detail": "Package",
       "sortText": "140",
@@ -869,7 +869,7 @@
               "character": 0
             }
           },
-          "newText": "import ballerinax/java.jdbc;\n"
+          "newText": "import ballerinax/jdbc;\n"
         }
       ]
     },

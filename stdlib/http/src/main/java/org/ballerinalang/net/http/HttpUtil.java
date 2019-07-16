@@ -1462,7 +1462,7 @@ public class HttpUtil {
 
         sslConfiguration.setSslHandshakeTimeOut(secureSocket.getDefaultableIntValue(ENDPOINT_CONFIG_HANDSHAKE_TIMEOUT));
 
-        Object[] cipherConfigs = secureSocket.getArrayValue(HttpConstants.SSL_CONFIG_CIPHERS).getStringArray();
+        Object[] cipherConfigs = secureSocket.getArrayValue(HttpConstants.SSL_CONFIG_CIPHERS).getValues();
         if (cipherConfigs != null) {
             List<Object> ciphersValueList = Arrays.asList(cipherConfigs);
             if (ciphersValueList.size() > 0) {

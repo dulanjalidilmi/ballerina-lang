@@ -17,7 +17,6 @@
 import ballerina/http;
 import ballerina/io;
 import ballerina/websub;
-import ballerina/'lang\.object as lang;
 
 const string MOCK_HEADER = "MockHeader";
 
@@ -101,7 +100,7 @@ service headerAndPayloadWebhook on new WebhookServerForHeaderAndPayload(8787) {
 /////////////////// Specific Webhook for dispatching by key ///////////////////
 public type WebhookServerForPayload object {
 
-    *lang:AbstractListener;
+    *AbstractListener;
 
     private websub:Listener websubListener;
 
@@ -129,7 +128,7 @@ public type WebhookServerForPayload object {
     }
 
     public function __attach(service s, string? name = ()) returns error? {
-        return self.websubListener.__attach(s, name);
+        return self.websubListener.__attach(s, name = name);
     }
 
     public function __start() returns error? {
@@ -144,7 +143,7 @@ public type WebhookServerForPayload object {
 /////////////////// Specific Webhook for dispatching by header ///////////////////
 public type WebhookServerForHeader object {
 
-    *lang:AbstractListener;
+    *AbstractListener;
 
     private websub:Listener websubListener;
 
@@ -167,7 +166,7 @@ public type WebhookServerForHeader object {
     }
 
     public function __attach(service s, string? name = ()) returns error? {
-        return self.websubListener.__attach(s, name);
+        return self.websubListener.__attach(s, name = name);
     }
 
     public function __start() returns error? {
@@ -182,7 +181,7 @@ public type WebhookServerForHeader object {
 /////////////////// Specific Webhook for dispatching by header and payload ///////////////////
 public type WebhookServerForHeaderAndPayload object {
 
-    *lang:AbstractListener;
+    *AbstractListener;
 
     private websub:Listener websubListener;
 
@@ -226,7 +225,7 @@ public type WebhookServerForHeaderAndPayload object {
     }
 
     public function __attach(service s, string? name = ()) returns error? {
-        return self.websubListener.__attach(s, name);
+        return self.websubListener.__attach(s, name = name);
     }
 
     public function __start() returns error? {

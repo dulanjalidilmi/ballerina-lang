@@ -19,7 +19,6 @@ package org.ballerinalang.jvm;
 
 import org.ballerinalang.jvm.types.TypeTags;
 import org.ballerinalang.jvm.values.ArrayValue;
-import org.ballerinalang.jvm.values.DecimalValue;
 import org.ballerinalang.jvm.values.MapValueImpl;
 import org.ballerinalang.jvm.values.RefValue;
 import org.ballerinalang.jvm.values.StreamingJsonValue;
@@ -298,7 +297,7 @@ public class JSONGenerator {
                 this.writeNumber(((Number) json).doubleValue());
                 break;
             case TypeTags.DECIMAL_TAG:
-                this.writeNumber(((DecimalValue) json).value());
+                this.writeNumber((BigDecimal) json);
                 break;
             case TypeTags.INT_TAG:
                 this.writeNumber(((Number) json).longValue());

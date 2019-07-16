@@ -1,5 +1,5 @@
 import ballerina/io;
-import ballerinax/java.jdbc;
+import ballerinax/jdbc;
 
 // Creates an endpoint for the H2 database. Changes the DB details before running the example.
 jdbc:Client testDB = new ({

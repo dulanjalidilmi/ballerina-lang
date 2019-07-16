@@ -95,13 +95,6 @@ public class ErrorValue extends RuntimeException implements RefValue {
         // do nothing, since error types are always frozen
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void freezeDirect() {
-    }
-
     @Override
     public String toString() {
         return stringValue();

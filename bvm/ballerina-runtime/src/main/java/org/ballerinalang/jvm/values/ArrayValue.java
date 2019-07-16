@@ -226,9 +226,6 @@ public class ArrayValue implements RefValue, CollectionValue {
 
     public Object getRefValue(long index) {
         rangeCheckForGet(index, size);
-        if (refValues == null) {
-            return getValue(index);
-        }
         return refValues[(int) index];
     }
 
@@ -882,9 +879,6 @@ public class ArrayValue implements RefValue, CollectionValue {
      */
     @Override
     public void freezeDirect() {
-        if (isFrozen()) {
-            return;
-        }
         this.freezeStatus.setFrozen();
         if (elementType == null || elementType.getTag() > TypeTags.BOOLEAN_TAG) {
             for (int i = 0; i < this.size; i++) {

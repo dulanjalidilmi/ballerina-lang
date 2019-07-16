@@ -66,11 +66,8 @@ public class DiagnosticsHelper {
     /**
      * Compiles and publishes diagnostics for a source file.
      *
-     * @param client     Language server client
-     * @param lsCompiler LS Compiler
-     * @param context    LS context
-     * @param docManager LS Document manager
-     * @throws LSCompilerException throws a LS compiler exception
+     * @param client            Language server client
+     * @param lsCompiler        LS Compiler
      */
     public synchronized void compileAndSendDiagnostics(LanguageClient client, LSCompiler lsCompiler, LSContext context,
                                                        WorkspaceDocumentManager docManager) throws LSCompilerException {

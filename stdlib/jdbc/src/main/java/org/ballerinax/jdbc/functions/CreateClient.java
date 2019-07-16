@@ -24,7 +24,7 @@ import org.ballerinalang.jvm.values.MapValue;
 import org.ballerinalang.jvm.values.ObjectValue;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinax.jdbc.Constants;
-import org.ballerinax.jdbc.datasource.SQLDatasourceUtils;
+import org.ballerinax.jdbc.SQLDatasourceUtils;
 
 import java.util.UUID;
 
@@ -35,7 +35,7 @@ import java.util.UUID;
  */
 
 @BallerinaFunction(
-        orgName = "ballerinax", packageName = "java.jdbc",
+        orgName = "ballerinax", packageName = "jdbc",
         functionName = "createClient",
         isPublic = true
 )

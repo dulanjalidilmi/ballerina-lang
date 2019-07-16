@@ -15,7 +15,7 @@
 // under the License.
 
 public function main (string... args) {
-    secureFunction("static-data", "static-data");
+    secureFunction.call("static-data", "static-data");
 }
 
 public function secureFunction (@untainted any secureIn, any insecureIn) {

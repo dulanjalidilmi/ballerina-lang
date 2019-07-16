@@ -70,7 +70,7 @@ public class MatchStructuredErrorPatternsTest {
         Assert.assertEquals(returns[++i].stringValue(), msg + "error : Error Code");
     }
 
-    @Test(description = "Test basics of structured pattern match statement 1", groups = "brokenOnLangLibChange")
+    @Test(description = "Test basics of structured pattern match statement 1")
     public void testBasicErrorMatch4() {
         BValue[] returns = BRunUtil.invoke(result, "testBasicErrorMatch4", new BValue[]{});
         Assert.assertEquals(returns.length, 1);
@@ -143,7 +143,7 @@ public class MatchStructuredErrorPatternsTest {
         Assert.assertEquals(results.getString(++i), "reason = Error Three, message = msgTwo, fatal = false");
     }
 
-    @Test(description = "TestMatchingErrorRestParameter", groups = "brokenOnLangLibChange")
+    @Test(description = "TestMatchingErrorRestParameter")
     public void testErrorRestParameterMatch() {
         BInteger[] args0 = { new BInteger(0) };
         BValue[] returns0 = BRunUtil.invoke(result, "testErrorRestParamMatch", args0);

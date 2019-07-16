@@ -13,7 +13,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/java.jdbc;
+import ballerinax/jdbc;
 import ballerina/io;
 
 type ResultCustomers record {
@@ -133,7 +133,7 @@ function testGeneratedKeyOnInsertError() returns @tainted [string, boolean, bool
     return [reason, isMessageExist, isSqlErrorCodeExist, isSqlStateExist];
 }
 
-function testUpdateResult() returns int|string {
+function testUpdateReslt() returns int|string {
     jdbc:Client testDB = new({
             url: "jdbc:h2:file:./target/tempdb/TEST_SQL_CONNECTOR_H2",
             username: "SA",

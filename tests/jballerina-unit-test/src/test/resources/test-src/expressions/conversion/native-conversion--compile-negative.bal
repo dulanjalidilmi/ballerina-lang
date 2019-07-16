@@ -43,7 +43,22 @@ type Person3 record {|
     string gender = "";
 |};
 
+function testFloatToIntWithMultipleArguments() returns int {
+    float a = 5.0;
+    return int.convert(a, a);
+}
+
+function testFloatToIntWithNoArguments() {
+    float a = 5.0;
+    return int.convert();
+}
+
 function testObjectToJson() returns json|error {
     PersonObj p = new PersonObj();
-    return json.constructFrom(p);
+    return json.convert(p);
+}
+
+function testTypeCheckingRecordToMapConversion() returns map<int>|error {
+    Person2 p = { name: "Supun" };
+    return map<int>.convert(p);
 }

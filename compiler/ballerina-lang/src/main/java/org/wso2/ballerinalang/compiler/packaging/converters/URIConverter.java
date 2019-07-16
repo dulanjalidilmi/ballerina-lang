@@ -23,18 +23,22 @@ import org.ballerinalang.model.elements.PackageID;
 import org.ballerinalang.repository.CompilerInput;
 import org.ballerinalang.spi.EmbeddedExecutor;
 import org.ballerinalang.toml.model.Proxy;
+import org.ballerinalang.util.EmbeddedExecutorError;
 import org.ballerinalang.util.EmbeddedExecutorProvider;
 import org.wso2.ballerinalang.compiler.packaging.Patten;
 import org.wso2.ballerinalang.compiler.packaging.repo.CacheRepo;
 import org.wso2.ballerinalang.compiler.util.ProjectDirConstants;
+import org.wso2.ballerinalang.programfile.ProgramFileConstants;
 import org.wso2.ballerinalang.util.RepoUtils;
 import org.wso2.ballerinalang.util.TomlParserUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -47,14 +51,14 @@ public class URIConverter implements Converter<URI> {
             ProjectDirConstants.BALLERINA_CENTRAL_DIR_NAME, CompilerPhase.BIR_GEN); // TODO check phase
     private final URI base;
     private boolean isBuild = true;
-    private PrintStream errStream = System.err;
+    private PrintStream outStream = System.err;
 
     public URIConverter(URI base) {
-        this.base = URI.create(base.toString() + "/modules/");
+        this.base = base;
     }
 
     public URIConverter(URI base, boolean isBuild) {
-        this.base = URI.create(base.toString() + "/modules/");
+        this.base = base;
         this.isBuild = isBuild;
     }
 
@@ -99,39 +103,39 @@ public class URIConverter implements Converter<URI> {
 
     }
 
-    public Stream<CompilerInput> finalize(URI remoteURI, PackageID moduleID) {
-        String orgName = moduleID.getOrgName().getValue();
-        String moduleName = moduleID.getName().getValue();
-        Path modulePathInBaloCache = RepoUtils.createAndGetHomeReposPath()
-                .resolve(ProjectDirConstants.BALO_CACHE_DIR_NAME)
-                .resolve(orgName)
-                .resolve(moduleName);
-        
-        createDirectory(modulePathInBaloCache);
+    public Stream<CompilerInput> finalize(URI u, PackageID packageID) {
+        String orgName = packageID.getOrgName().getValue();
+        String pkgName = packageID.getName().getValue();
+        Path destDirPath = RepoUtils.createAndGetHomeReposPath().resolve(Paths.get(ProjectDirConstants.CACHES_DIR_NAME,
+                                                                                   ProjectDirConstants
+                                                                                           .BALLERINA_CENTRAL_DIR_NAME,
+                                                                                   orgName, pkgName));
+        createDirectory(destDirPath);
         try {
-            String modulePath = orgName + "/" + moduleName;
+            String fullPkgPath = orgName + "/" + pkgName;
             Proxy proxy = TomlParserUtils.readSettings().getProxy();
 
-            String supportedVersionRange = "";
+            String supportedVersionRange = "?supported-version-range=" + ProgramFileConstants.MIN_SUPPORTED_VERSION +
+                    "," + ProgramFileConstants.MAX_SUPPORTED_VERSION;
             String nightlyBuild = String.valueOf(RepoUtils.getBallerinaVersion().contains("SNAPSHOT"));
             EmbeddedExecutor executor = EmbeddedExecutorProvider.getInstance().getExecutor();
-            Optional<RuntimeException> execute = executor.executeMainFunction("module_pull",
-                    remoteURI.toString(), modulePathInBaloCache.toString(), modulePath, proxy.getHost(),
+            Optional<EmbeddedExecutorError> execute = executor.executeFunction("packaging_pull/packaging_pull.balx",
+                    u.toString(), destDirPath.toString(), fullPkgPath, File.separator, proxy.getHost(),
                     proxy.getPort(), proxy.getUserName(), proxy.getPassword(), RepoUtils.getTerminalWidth(),
                     supportedVersionRange, String.valueOf(isBuild), nightlyBuild);
             // Check if error has occurred or not.
             if (execute.isPresent()) {
-                String errorMessage = execute.get().getMessage();
+                String errorMessage = RepoUtils.getInnerErrorMessage(execute.get());
                 if (!errorMessage.trim().equals("")) {
-                    errStream.println(errorMessage);
+                    outStream.println(errorMessage);
                 }
                 return Stream.of();
             } else {
-                Patten patten = binaryRepo.calculate(moduleID);
-                return patten.convertToSources(binaryRepo.getConverterInstance(), moduleID);
+                Patten patten = binaryRepo.calculate(packageID);
+                return patten.convertToSources(binaryRepo.getConverterInstance(), packageID);
             }
         } catch (Exception e) {
-            errStream.println(e.getMessage());
+            outStream.println(e.getMessage());
         }
         return Stream.of();
     }

@@ -70,7 +70,7 @@ public class RecordVariableReferenceTest {
         Assert.assertNull(returns[3]);
     }
 
-    @Test(description = "Test simple record variable definition", groups = { "brokenOnLangLibChange" })
+    @Test(description = "Test simple record variable definition")
     public void testRestParam() {
         BValue[] returns = BRunUtil.invoke(result, "testRestParam");
         Assert.assertEquals(returns.length, 1);
@@ -104,8 +104,7 @@ public class RecordVariableReferenceTest {
         Assert.assertEquals(((BInteger) returns[6]).intValue(), 1990);
     }
 
-    @Test(description = "Test record var ref inside tuple var ref inside record var ref",
-            groups = { "brokenOnLangLibChange" })
+    @Test(description = "Test record var ref inside tuple var ref inside record var ref")
     public void testRecordInsideTupleInsideRecord() {
         BValue[] returns = BRunUtil.invoke(result, "testRecordInsideTupleInsideRecord");
         Assert.assertEquals(returns.length, 3);

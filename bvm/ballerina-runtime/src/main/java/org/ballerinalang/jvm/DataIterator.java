@@ -18,7 +18,6 @@
 package org.ballerinalang.jvm;
 
 import org.ballerinalang.jvm.types.BStructureType;
-import org.ballerinalang.jvm.values.DecimalValue;
 
 import java.util.List;
 import java.util.Map;
@@ -47,8 +46,6 @@ public interface DataIterator {
     Boolean getBoolean(int columnIndex);
 
     String getBlob(int columnIndex);
-
-    DecimalValue getDecimal(int columnIndex);
 
     Object[] getStruct(int columnIndex);
 

@@ -17,10 +17,10 @@
 */
 package org.ballerinalang.packerina.cmd;
 
+import org.ballerinalang.launcher.BLauncherCmd;
+import org.ballerinalang.launcher.LauncherUtils;
 import org.ballerinalang.model.elements.PackageID;
 import org.ballerinalang.repository.CompilerInput;
-import org.ballerinalang.tool.BLauncherCmd;
-import org.ballerinalang.tool.LauncherUtils;
 import org.wso2.ballerinalang.compiler.packaging.Patten;
 import org.wso2.ballerinalang.compiler.packaging.converters.Converter;
 import org.wso2.ballerinalang.compiler.packaging.repo.RemoteRepo;
@@ -80,7 +80,7 @@ public class PullCommand implements BLauncherCmd {
 
         String resourceName = argList.get(0);
         String orgName;
-        String moduleName;
+        String packageName;
         String version;
 
         // Get org-name
@@ -98,22 +98,22 @@ public class PullCommand implements BLauncherCmd {
         // Get module name
         int packageNameIndex = resourceName.indexOf(":");
         if (packageNameIndex != -1) { // version is provided
-            moduleName = resourceName.substring(orgNameIndex + 1, packageNameIndex);
+            packageName = resourceName.substring(orgNameIndex + 1, packageNameIndex);
             version = resourceName.substring(packageNameIndex + 1, resourceName.length());
         } else {
-            moduleName = resourceName.substring(orgNameIndex + 1, resourceName.length());
+            packageName = resourceName.substring(orgNameIndex + 1, resourceName.length());
             version = Names.EMPTY.getValue();
         }
 
         URI baseURI = URI.create(RepoUtils.getRemoteRepoURL());
         Repo remoteRepo = new RemoteRepo(baseURI, false);
 
-        PackageID moduleID = new PackageID(new Name(orgName), new Name(moduleName), new Name(version));
+        PackageID packageID = new PackageID(new Name(orgName), new Name(packageName), new Name(version));
 
-        Patten patten = remoteRepo.calculate(moduleID);
+        Patten patten = remoteRepo.calculate(packageID);
         if (patten != Patten.NULL) {
             Converter converter = remoteRepo.getConverterInstance();
-            List<CompilerInput> compilerInputs = patten.convertToSources(converter, moduleID)
+            List<CompilerInput> compilerInputs = patten.convertToSources(converter, packageID)
                                                        .collect(Collectors.toList());
             if (compilerInputs.size() == 0) {
                 // Exit status, zero for OK, non-zero for error

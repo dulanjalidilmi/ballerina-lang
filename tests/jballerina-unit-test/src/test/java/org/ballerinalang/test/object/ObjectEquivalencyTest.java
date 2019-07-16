@@ -35,8 +35,7 @@ public class ObjectEquivalencyTest {
 
     @BeforeClass
     public void setup() {
-
-        compileResult = BCompileUtil.compile("test-src/object/ObjectProject", "ObjectEquivalencyTest");
+        compileResult = BCompileUtil.compile("test-src/object/object-equivalency.bal");
     }
 
     @Test(description = "Test equivalence of objects that are in the same package and the members are visible at " +
