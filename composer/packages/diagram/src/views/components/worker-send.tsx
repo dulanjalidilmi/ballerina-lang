@@ -33,6 +33,12 @@ export const WorkerSend: React.StatelessComponent<{
             y: viewState.bBox.y + (viewState.bBox.h / 2)
         };
 
+        if (!viewState.isSynced) {
+            return <g className="action-invocation">
+                {!viewState.isAction && <text {...statementProps}>{viewState.bBox.label}</text>}
+            </g>;
+        }
+
         return (
             <g className="action-invocation">
                 {viewState.isAction && <ActionInvocation

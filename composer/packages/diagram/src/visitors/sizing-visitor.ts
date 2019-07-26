@@ -443,6 +443,8 @@ class SizingVisitor implements Visitor {
         if (viewState.hidden && !viewState.isInHiddenBlock) {
             viewState.bBox.h = 0;
             viewState.bBox.w = 0;
+            viewState.bBox.leftMargin = 0;
+            viewState.bBox.paddingTop = 0;
             return;
         }
 
@@ -605,6 +607,7 @@ class SizingVisitor implements Visitor {
         const workersMap: {[workerName: string]: WorkerTuple} = {};
         const workerHeightInfo: {[workerName: string]: {currentHeight: number, currentIndex: number}} = {};
 
+        // 1. Collect all sends and receives
         workers.forEach((worker) => {
             sends[worker.view.name] = {};
             receives[worker.view.name] = {};
@@ -615,6 +618,7 @@ class SizingVisitor implements Visitor {
             };
 
             worker.block.statements.forEach((statement, index) => {
+                // Check if the statement is a send
                 if (ASTKindChecker.isWorkerSend(statement)) {
                     if (sends[worker.view.name][statement.workerName.value] === undefined) {
                         sends[worker.view.name][statement.workerName.value] = [];
@@ -623,6 +627,7 @@ class SizingVisitor implements Visitor {
                     return;
                 }
 
+                // Check if the statement is a receive
                 const receiveStatement = ASTUtil.extractWorkerReceive(statement);
                 if (receiveStatement) {
                     if (receives[worker.view.name][receiveStatement.workerName.value] === undefined) {
@@ -634,6 +639,7 @@ class SizingVisitor implements Visitor {
             });
         });
 
+        // 2. Pair up sends and receives
         workers.forEach((fromWorker) => {
             workers.forEach((toWorker) => {
                 if (fromWorker === toWorker) {
@@ -645,6 +651,8 @@ class SizingVisitor implements Visitor {
                 }
                 sends[fromWorker.view.name][toWorker.view.name].forEach(({statement: send, index: sendIndex}) => {
                     (send.viewState as WorkerSendViewState).to = toWorker.view;
+                    // Since sends and receives are added to the list on order, the first available receive in the
+                    // array is the matching receive to this send.
                     const r = receives[toWorker.view.name][fromWorker.view.name].shift();
                     if (!r) {
                         return;
@@ -655,8 +663,13 @@ class SizingVisitor implements Visitor {
                 });
             });
         });
+
+        // 3. Sort the pairs in the order they should appear top to bottom
         sendReceivePairs.sort((p1, p2) => {
             if (p1.send.workerName.value === p2.send.workerName.value) {
+                // If two pairs has the same receiver (send.workerName is the receiver name) one with
+                // higher lower receiver index (one defined heigher up in the receiver) should be rendered
+                // higher in the list of pairs. Same logic is used for all the cases following.
                 return p1.receiveIndex - p2.receiveIndex;
             }
             if (p1.send.workerName.value === p2.receive.workerName.value) {
@@ -670,6 +683,8 @@ class SizingVisitor implements Visitor {
             }
             return 0;
         });
+
+        // 4. Calculate heights
         sendReceivePairs.forEach((pair) => {
             const sendWorker = workersMap[pair.receive.workerName.value];
             for (let index = workerHeightInfo[sendWorker.view.name].currentIndex; index < pair.sendIndex; index++) {
@@ -689,7 +704,7 @@ class SizingVisitor implements Visitor {
             workerHeightInfo[receiveWorker.view.name].currentIndex = pair.receiveIndex;
             const sendHeight = workerHeightInfo[sendWorker.view.name].currentHeight;
             const receiveHeight = workerHeightInfo[receiveWorker.view.name].currentHeight;
-
+            (pair.send.viewState as WorkerSendViewState).isSynced = true;
             if (sendHeight > receiveHeight) {
                 pair.receiveHolder.viewState.bBox.paddingTop = sendHeight - receiveHeight;
             } else {
